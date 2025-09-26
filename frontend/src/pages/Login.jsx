@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import api from '../services/api';
 import { Alert, Button } from 'antd';
 import './Login.css'; // Import the CSS file for styling
+
+import loginIllustration from '../assets/login.png';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +12,7 @@ const Login = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [alert, setAlert] = useState({ type: '', message: '' });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const validateEmail = (value) => {
@@ -38,6 +41,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
@@ -52,22 +56,27 @@ const Login = () => {
     }
 
     try {
-      const response = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
+      const {data} = await api.post('/auth/login', { email, password });
+      localStorage.setItem('token', data?.token ?? '');
 
-      const userData = await api.get('/auth/profile');
-      const role = userData.data.user.role;
+      const profileRes  = await api.get('/auth/profile');
+      const role = profileRes?.data?.user?.role;
+
+      
 
       setAlert({ type: 'success', message: 'Login successful!' });
       setTimeout(() => {
         navigate(`/${role}/dashboard`);
       }, 1000);
     } catch (error) {
+      const msg = error?.response?.data?.message || error?.message || 'Login failed. Please try again.';
       setAlert({
         type: 'error',
-        message: error.response?.data?.message || 'Login failed. Please try again.',
+        message: msg,
       });
       setTimeout(() => setAlert({ type: '', message: '' }), 3000);
+    }finally {
+      setLoading(false); // ADD THIS
     }
   };
 
@@ -99,7 +108,7 @@ const Login = () => {
             Manage all your labs in one place.
           </p>
           <img
-            src="../src/assets/login.png"
+            src={loginIllustration}
             alt="Lab Management Illustration"
             className="illustration"
           />
@@ -107,13 +116,13 @@ const Login = () => {
 
         <div className="right-section">
           <div className="nav-links">
-            <a href="/student">Student</a>
+            <Link to="/student">Student</Link>
             <span>|</span>
-            <a href="/lecturer">Lecturer</a>
+            <Link to="/lecturer">Lecturer</Link>
             <span>|</span>
-            <a href="/technical-officer">Technical Officer</a>
+            <Link to="/technical-officer">Technical Officer</Link>
             <span>|</span>
-            <a href="/admin">Admin</a>
+            <Link to="/admin">Admin</Link>
           </div>
           <h2>Login</h2>
           <form onSubmit={handleLogin} className="login-form">
@@ -145,7 +154,7 @@ const Login = () => {
               {passwordError && <span className="error">{passwordError}</span>}
             </div>
 
-            <Button type="primary" htmlType="submit" className="login-button">
+            <Button type="primary" htmlType="submit" className="login-button" loading={loading} disabled={loading}>
               LOGIN
             </Button>
             <Button

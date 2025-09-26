@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import LabSheduleCalendar from '../components/LabSheduleCalendar';
 import api, { getUserProfile } from '../services/api';
 
+import adminIllustration from '../assets/admin_dashboard.png';
+
 const AdminDashboard = () => {
   const [user, setUser] = useState(null);
   const [admin, setAdmin] = useState(null);
@@ -22,7 +24,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
-        const response = await api.get(`auth/admin/${user.profile}`);
+        const response = await api.get(`/auth/admin/${user.profile}`);
         setAdmin(response.data);
         console.log('Admin Profile:', response.data);
       } catch (error) {
@@ -53,7 +55,7 @@ const AdminDashboard = () => {
           <p>Control everything in one place</p>
         </div>
         <div className="welcome-image">
-          <img src="../src/assets/admin_dashboard.png" className="welcome-image"/>
+           <img src={adminIllustration} className="welcome-image" alt="Admin dashboard" />
         </div>
       </div>
       <LabSheduleCalendar />

@@ -6,6 +6,7 @@ import { Empty } from 'antd';
 import api from '../services/api';
 
 const { Dragger } = Upload;
+const IMAGE_BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:8000').replace(/\/+$/, '');
 
 export default function EquipmentManagement() {
   const [equipment, setEquipment] = useState([]);

@@ -3,6 +3,8 @@ import LabScheduleCalendar from '../components/LabSheduleCalendar';
 import BorrowingHistory from '../components/BorrowingHistory';
 import api, { getUserProfile } from '../services/api';
 
+import adminIllustration from '../assets/admin_dashboard.png'; 
+
 const TODashboard = () => {
   const [user, setUser] = useState(null);
   const [lecturer, setLecturer] = useState(null);
@@ -24,7 +26,7 @@ const TODashboard = () => {
   useEffect(() => {
     const fetchLecturer = async () => {
       try {
-        const response = await api.get(`auth/lecturer/${user.profile}`);
+        const response = await api.get(`/auth/lecturer/${user.profile}`);
         setLecturer(response.data);
         console.log('Lecturer Profile:', response.data);
       } catch (error) {
